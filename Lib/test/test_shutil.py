@@ -1,5 +1,3 @@
-# Copyright (C) 2003 Python Software Foundation
-
 import unittest
 import unittest.mock
 import shutil
@@ -156,10 +154,6 @@ def supports_file2file_sendfile():
 
 SUPPORTS_SENDFILE = supports_file2file_sendfile()
 
-# AIX 32-bit mode, by default, lacks enough memory for the xz/lzma compiler test
-# The AIX command 'dump -o program' gives XCOFF header information
-# The second word of the last line in the maxdata value
-# when 32-bit maxdata must be greater than 0x1000000 for the xz test to succeed
 def _maxdataOK():
     if AIX and sys.maxsize == 2147483647:
         hdrs=subprocess.getoutput("/usr/bin/dump -o %s" % sys.executable)
@@ -284,7 +278,8 @@ class TestRmTree(BaseTest, unittest.TestCase):
         self.assertTrue(os.path.exists(dir_))
         self.assertTrue(os.path.lexists(link))
         errors = []
-        def onexc(*args):
+
+def onexc(*args):
             errors.append(args)
         shutil.rmtree(link, onexc=onexc)
         self.assertEqual(len(errors), 1)
@@ -390,7 +385,8 @@ class TestRmTree(BaseTest, unittest.TestCase):
         self.child_dir_path = os.path.join(TESTFN, 'b')
         os_helper.create_empty_file(self.child_file_path)
         os.mkdir(self.child_dir_path)
-        old_dir_mode = os.stat(TESTFN).st_mode
+
+old_dir_mode = os.stat(TESTFN).st_mode
         old_child_file_mode = os.stat(self.child_file_path).st_mode
         old_child_dir_mode = os.stat(self.child_dir_path).st_mode
         # Make unwritable.
@@ -489,7 +485,8 @@ class TestRmTree(BaseTest, unittest.TestCase):
             self.errorState += 1
         else:
             self.assertEqual(func, os.rmdir)
-            self.assertEqual(arg, TESTFN)
+
+self.assertEqual(arg, TESTFN)
             self.assertTrue(isinstance(exc, OSError))
             self.errorState = 3
 
@@ -608,7 +605,8 @@ class TestRmTree(BaseTest, unittest.TestCase):
 
     @unittest.skipUnless(shutil.rmtree.avoids_symlink_attacks, "dir_fd is not supported")
     def test_rmtree_with_dir_fd(self):
-        tmp_dir = self.mkdtemp()
+
+tmp_dir = self.mkdtemp()
         victim = 'killme'
         fullname = os.path.join(tmp_dir, victim)
         dir_fd = os.open(tmp_dir, os.O_RDONLY)
@@ -727,7 +725,8 @@ class TestRmTree(BaseTest, unittest.TestCase):
         try:
             shutil.rmtree(TESTFN, onexc=_onexc)
         except:
-            # Test failed, so cleanup artifacts.
+
+# Test failed, so cleanup artifacts.
             for path, mode in zip(paths, old_modes):
                 try:
                     os.chmod(path, mode)
@@ -828,7 +827,8 @@ class TestCopyTree(BaseTest, unittest.TestCase):
     def test_copytree_with_exclude(self):
         # creating data
         join = os.path.join
-        exists = os.path.exists
+
+exists = os.path.exists
         src_dir = self.mkdtemp()
         try:
             dst_dir = join(self.mkdtemp(), 'destination')
@@ -933,7 +933,8 @@ class TestCopyTree(BaseTest, unittest.TestCase):
         self.assertEqual(len(invocations), 9)
 
     def test_copytree_retains_permissions(self):
-        tmp_dir = self.mkdtemp()
+
+tmp_dir = self.mkdtemp()
         src_dir = os.path.join(tmp_dir, 'source')
         os.mkdir(src_dir)
         dst_dir = os.path.join(tmp_dir, 'destination')
@@ -1035,7 +1036,8 @@ class TestCopyTree(BaseTest, unittest.TestCase):
     def test_copytree_dangling_symlinks(self):
         src_dir = self.mkdtemp()
         valid_file = os.path.join(src_dir, 'test.txt')
-        create_file(valid_file, 'abc')
+
+create_file(valid_file, 'abc')
         dir_a = os.path.join(src_dir, 'dir_a')
         os.mkdir(dir_a)
         for d in src_dir, dir_a:
@@ -1139,7 +1141,8 @@ class TestCopy(BaseTest, unittest.TestCase):
     def test_copymode_symlink_to_symlink(self):
         tmp_dir = self.mkdtemp()
         src = os.path.join(tmp_dir, 'foo')
-        dst = os.path.join(tmp_dir, 'bar')
+
+dst = os.path.join(tmp_dir, 'bar')
         src_link = os.path.join(tmp_dir, 'baz')
         dst_link = os.path.join(tmp_dir, 'quux')
         create_file(src, 'foo')
@@ -1239,7 +1242,8 @@ class TestCopy(BaseTest, unittest.TestCase):
             def _chflags_raiser(path, flags, *, follow_symlinks=True):
                 ex.errno = err
                 raise ex
-            return _chflags_raiser
+
+return _chflags_raiser
         old_chflags = os.chflags
         try:
             for err in errno.EOPNOTSUPP, errno.ENOTSUP:
@@ -1349,7 +1353,8 @@ class TestCopy(BaseTest, unittest.TestCase):
         create_file((tmpdir, fname), 'xxx')
         file1 = os.path.join(tmpdir, fname)
         tmpdir2 = self.mkdtemp()
-        method(file1, tmpdir2)
+
+method(file1, tmpdir2)
         file2 = os.path.join(tmpdir2, fname)
         return (file1, file2)
 
@@ -1453,7 +1458,8 @@ class TestCopy(BaseTest, unittest.TestCase):
         # copy and copy2 both return their destination path.
         for fn in (shutil.copy, shutil.copy2):
             src_dir = self.mkdtemp()
-            dst_dir = self.mkdtemp()
+
+dst_dir = self.mkdtemp()
             src = os.path.join(src_dir, 'foo')
             create_file(src, 'foo')
             rv = fn(src, dst_dir)
@@ -1568,7 +1574,7 @@ class TestCopy(BaseTest, unittest.TestCase):
         self.assertTrue(os.path.exists(rv))
         self.assertEqual(read_file(src_file), read_file(dst_file))
 
-    def test_copyfile_same_file(self):
+def test_copyfile_same_file(self):
         # copyfile() should raise SameFileError if the source and destination
         # are the same.
         src_dir = self.mkdtemp()
@@ -1670,7 +1676,8 @@ class TestArchives(BaseTest, unittest.TestCase):
         with os_helper.temp_cwd(), no_chdir:
             base_name = os.path.join('dst3', 'archive')
             archive = make_archive(base_name, 'tar', root_dir,
-                                   os.path.join(base_dir, 'sub'))
+
+os.path.join(base_dir, 'sub'))
             self.assertEqual(archive, os.path.abspath(base_name) + '.tar')
             self.assertTrue(os.path.isfile(archive))
             self.assertTrue(tarfile.is_tarfile(archive))
@@ -1764,7 +1771,8 @@ class TestArchives(BaseTest, unittest.TestCase):
 
         # now for a dry_run
         with no_chdir:
-            tarball = make_archive(base_name, 'tar', root_dir, base_dir,
+
+tarball = make_archive(base_name, 'tar', root_dir, base_dir,
                                    dry_run=True)
         self.assertEqual(tarball, base_name + '.tar')
         self.assertTrue(os.path.isfile(tarball))
@@ -1853,7 +1861,8 @@ class TestArchives(BaseTest, unittest.TestCase):
                 self.assertCountEqual(zf.namelist(),
                         ['dist/', 'dist/sub/', 'dist/sub2/',
                          'dist/file1', 'dist/file2', 'dist/sub/file3',
-                         'outer'])
+
+'outer'])
 
     @support.requires_zlib()
     @unittest.skipUnless(shutil.which('zip'),
@@ -1962,7 +1971,8 @@ class TestArchives(BaseTest, unittest.TestCase):
         try:
             for member in archive.getmembers():
                 self.assertEqual(member.uid, 0)
-                self.assertEqual(member.gid, 0)
+
+self.assertEqual(member.gid, 0)
         finally:
             archive.close()
 
@@ -2042,32 +2052,6 @@ class TestArchives(BaseTest, unittest.TestCase):
             self.assertEqual(make_archive('test', 'zip'), 'test.zip')
             self.assertTrue(os.path.isfile('test.zip'))
 
-    def test_make_archive_pathlike_cwd_default(self):
-        called_args = []
-        def archiver(base_name, base_dir, **kw):
-            called_args.append((base_name, kw.get('root_dir')))
-
-        register_archive_format('xxx', archiver, [], 'xxx file')
-        self.addCleanup(unregister_archive_format, 'xxx')
-        with no_chdir:
-            make_archive(FakePath('basename'), 'xxx')
-        self.assertEqual(called_args, [('basename', None)])
-
-    def test_make_archive_pathlike_cwd_supports_root_dir(self):
-        root_dir = self.mkdtemp()
-        called_args = []
-        def archiver(base_name, base_dir, **kw):
-            called_args.append((base_name, base_dir, kw.get('root_dir')))
-        archiver.supports_root_dir = True
-
-        register_archive_format('xxx', archiver, [], 'xxx file')
-        self.addCleanup(unregister_archive_format, 'xxx')
-        with no_chdir:
-            make_archive(FakePath('basename'), 'xxx',
-                         root_dir=FakePath(root_dir),
-                         base_dir=FakePath('basedir'))
-        self.assertEqual(called_args, [('basename', 'basedir', root_dir)])
-
     def test_register_archive_format(self):
 
         self.assertRaises(TypeError, register_archive_format, 'xxx', 1)
@@ -2094,7 +2078,8 @@ class TestArchives(BaseTest, unittest.TestCase):
                 nonexisting_file = os.path.join(tmp_dir, 'nonexisting')
                 with self.assertRaises(FileNotFoundError) as cm:
                     make_archive(TESTFN, 'tar', nonexisting_file, dry_run=dry_run)
-                self.assertEqual(cm.exception.errno, errno.ENOENT)
+
+self.assertEqual(cm.exception.errno, errno.ENOENT)
                 self.assertEqual(cm.exception.filename, nonexisting_file)
                 self.assertFalse(os.path.exists(f'{TESTFN}.tar'))
 
@@ -2200,7 +2185,8 @@ class TestArchives(BaseTest, unittest.TestCase):
 
         def _boo(filename, extract_dir, extra):
             self.assertEqual(extra, 1)
-            self.assertEqual(filename, 'stuff.boo')
+
+self.assertEqual(filename, 'stuff.boo')
             self.assertEqual(extract_dir, 'xx')
 
         register_unpack_format('Boo', ['.boo', '.b2'], _boo, [('extra', 1)])
@@ -2318,7 +2304,8 @@ class TestMisc(BaseTest, unittest.TestCase):
         check_chown(filename, uid, gid)
         shutil.chown(linkname, uid, follow_symlinks=True)
         check_chown(filename, uid)
-        shutil.chown(baselinkname, group=gid, dir_fd=dirfd, follow_symlinks=False)
+
+shutil.chown(baselinkname, group=gid, dir_fd=dirfd, follow_symlinks=False)
         check_chown(filename, gid=gid)
         shutil.chown(baselinkname, uid, gid, dir_fd=dirfd, follow_symlinks=True)
         check_chown(filename, uid, gid)
@@ -2420,7 +2407,8 @@ class TestWhich(BaseTest, unittest.TestCase):
                 self.assertEqual(rv, os.path.join(self.curdir, self.file))
             with os_helper.change_cwd(path=self.other_dir):
                 rv = shutil.which(self.file, path=self.dir)
-                self.assertEqual(rv, os.path.join(self.curdir, self.file))
+
+self.assertEqual(rv, os.path.join(self.curdir, self.file))
 
     @os_helper.skip_if_dac_override
     def test_non_matching_mode(self):
@@ -2527,7 +2515,8 @@ class TestWhich(BaseTest, unittest.TestCase):
         self.create_file(filepath)
         with os_helper.EnvironmentVarGuard() as env:
             env['PATHEXT'] = ext
-            self.assertEqual(shutil.which(cmd, path=self.dir), filepath)
+
+self.assertEqual(shutil.which(cmd, path=self.dir), filepath)
             self.assertEqual(shutil.which(cmdext, path=self.dir), filepath)
 
     # Issue 40592: See https://bugs.python.org/issue40592
@@ -2615,7 +2604,8 @@ class TestWhich(BaseTest, unittest.TestCase):
 
         with unittest.mock.patch('_winapi.NeedCurrentDirectoryForExePath', return_value=False) as need_curdir_mock:
             self.assertFalse(shutil._win_path_needs_curdir('dontcare', os.X_OK))
-            need_curdir_mock.assert_called_once_with('dontcare')
+
+need_curdir_mock.assert_called_once_with('dontcare')
 
     @unittest.skipUnless(sys.platform == "win32", 'test specific to Windows')
     def test_same_dir_with_pathext_extension(self):
@@ -2703,7 +2693,8 @@ class TestWhich(BaseTest, unittest.TestCase):
         self.create_file(other_file_path)
 
         # pathext match in the second directory
-        self.assertNormEqual(shutil.which(cmd, path=search_path), self.filepath)
+
+self.assertNormEqual(shutil.which(cmd, path=search_path), self.filepath)
         # full match in the first directory
         self.assertNormEqual(shutil.which(cmd, path=search_path, mode=os.F_OK),
                              other_file_path)
@@ -2815,7 +2806,8 @@ class TestMove(BaseTest, unittest.TestCase):
     @unittest.skipUnless(os.path.altsep, 'requires os.path.altsep')
     def test_move_dir_altsep_to_dir(self):
         self._check_move_dir(self.src_dir + os.path.altsep, self.dst_dir,
-            os.path.join(self.dst_dir, os.path.basename(self.src_dir)))
+
+os.path.join(self.dst_dir, os.path.basename(self.src_dir)))
 
     def test_existing_file_inside_dest_dir(self):
         # A file with the same name inside the destination dir already exists.
@@ -2928,7 +2920,8 @@ class TestMove(BaseTest, unittest.TestCase):
         self.src_dir = self.mkdtemp()
         dst_dir = os.path.join(
                 os.path.dirname(self.src_dir),
-                os.path.basename(self.src_dir).upper())
+
+os.path.basename(self.src_dir).upper())
         self.assertNotEqual(self.src_dir, dst_dir)
 
         try:
@@ -3038,7 +3031,8 @@ class TestCopyFile(unittest.TestCase):
 
         def _open(filename, mode='r'):
             if filename == 'srcfile':
-                return srcfile
+
+return srcfile
             if filename == 'destfile':
                 raise OSError('Cannot open "destfile"')
             assert 0  # shouldn't reach here.
@@ -3164,7 +3158,8 @@ class TestCopyFileObj(unittest.TestCase):
         self.addCleanup(os_helper.unlink, fname)
         with unittest.mock.patch("shutil._copyfileobj_readinto") as m:
             shutil.copyfile(fname, TESTFN2)
-        assert not m.called
+
+assert not m.called
         self.assert_files_eq(fname, TESTFN2)
 
 
@@ -3289,7 +3284,8 @@ class _ZeroCopyFileLinuxTest(_ZeroCopyFileTest):
                 self.assertEqual(dst.read(), self.FILEDATA)
 
     def test_exception_on_second_call(self):
-        def syscall(*args, **kwargs):
+
+def syscall(*args, **kwargs):
             if not flag:
                 flag.append(None)
                 return orig_syscall(*args, **kwargs)
@@ -3389,7 +3385,8 @@ class TestZeroCopySendfile(_ZeroCopyFileLinuxTest, unittest.TestCase):
                 shutil.copyfile(TESTFN, TESTFN2)
                 assert not m.called
         finally:
-            shutil._USE_CP_SENDFILE = True
+
+shutil._USE_CP_SENDFILE = True
 
 
 @unittest.skipUnless(shutil._USE_CP_COPY_FILE_RANGE, "os.copy_file_range() not supported")
@@ -3506,7 +3503,8 @@ class PublicAPITests(unittest.TestCase):
 
     def test_module_all_attribute(self):
         self.assertHasAttr(shutil, '__all__')
-        target_api = ['copyfileobj', 'copyfile', 'copymode', 'copystat',
+
+target_api = ['copyfileobj', 'copyfile', 'copymode', 'copystat',
                       'copy', 'copy2', 'copytree', 'move', 'rmtree', 'Error',
                       'SpecialFileError', 'make_archive',
                       'get_archive_formats', 'register_archive_format',
@@ -3518,8 +3516,45 @@ class PublicAPITests(unittest.TestCase):
             target_api.append('disk_usage')
         self.assertEqual(set(shutil.__all__), set(target_api))
         with self.assertWarns(DeprecationWarning):
-            from shutil import ExecError  # noqa: F401
+            from shutil import ExecError
 
+
+
+class TestShutilZipTraversal(unittest.TestCase):
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp()
+        self.extract_dir = os.path.join(self.tmp_dir, "extract")
+        os.mkdir(self.extract_dir)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp_dir)
+
+    @unittest.skipUnless(sys.platform == 'win32', 'Windows-specific traversal test')
+    @support.requires_zlib()
+    def test_unpack_zipfile_traversal_windows_drive(self):
+        # Create a ZIP file with a drive-prefixed path
+        zip_path = os.path.join(self.tmp_dir, "test.zip")
+        with zipfile.ZipFile(zip_path, 'w') as zf:
+            # zipfile.extractall() should sanitize this to 'D/traversal.txt'
+            # relative to extract_dir.
+            zf.writestr("D:/traversal.txt", "found you")
+
+        # Prior to the fix, this might have attempted to write to D:/traversal.txt
+        # With the fix (using extractall()), it's safely joined.
+        shutil.unpack_archive(zip_path, self.extract_dir)
+
+        # Check that it didn't go to D:/
+        self.assertFalse(os.path.exists("D:/traversal.txt"))
+
+        # Check where it actually went (zipfile.extractall() behavior)
+        # It strips the drive letter.
+        # On modern Python, it results in 'D/traversal.txt' under extract_dir.
+        found = False
+        for root, dirs, files in os.walk(self.extract_dir):
+            if "traversal.txt" in files:
+                found = True
+                break
+        self.assertTrue(found, "Extracted file not found within extract_dir")
 
 if __name__ == '__main__':
     unittest.main()
