@@ -7470,7 +7470,7 @@ class ExtensionModuleTests(unittest.TestCase):
                 del sys.modules['_datetime']
             """)
         script_helper.assert_python_ok('-c', script)
-
+    @unittest.skipIf(_interpreters is None, "requires _interpreters")
     def test_concurrent_initialization_subinterpreter(self):
         # gh-136421: Concurrent initialization of _datetime across multiple
         # interpreters wasn't thread-safe due to its static types.
